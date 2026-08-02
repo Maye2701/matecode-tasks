@@ -42,7 +42,7 @@ function LoginForm() {
                 />
             </div>
             <button type="submit" className="primary">Iniciar sesión</button>
-            {message && <p role="status">{message}</p>}
+            {message && <p role="status" className="status-message">{message}</p>}
         </form>
     )
 }

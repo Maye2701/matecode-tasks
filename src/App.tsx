@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router'
 import './App.css'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegistrePage'
+import RegisterPage from './pages/RegisterPage'
 import TaskPage from './pages/TaskPage'
 
 function App() {

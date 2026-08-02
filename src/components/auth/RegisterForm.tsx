@@ -60,7 +60,7 @@ function RegisterForm() {
                 />
             </div>
             <button type="submit" className="primary">Registrarse</button>
-            {message && <p role="status">{message}</p>}
+            {message && <p role="status" className="status-message">{message}</p>}
         </form>
     )
 }
