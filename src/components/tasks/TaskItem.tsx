@@ -44,10 +44,12 @@ function TaskItem({ task, onToggleTask, onDeleteTask, onUpdateTask }: TaskItemPr
         <li className="task-item">
             <h3>{task.title}</h3>
             <p>{task.description}</p>
-            {task.completed ? <span className="completed">Completada</span> : <span className="pending">Pendiente</span>}
-            <button type="button" className="danger" onClick={handleDeleteClick}>Eliminar</button>
-            <button onClick={() => onToggleTask(task.id)}>{task.completed ? "Pendiente" : "Completada"}</button>
-            <button onClick={() => setIsEditing(true)}>Editar</button>
+            {task.completed ? <span className="task-status completed">Completada</span> : <span className="task-status pending">Pendiente</span>}
+            <div className="task-actions">
+                <button type="button" className="danger" onClick={handleDeleteClick}>Eliminar</button>
+                <button className="secondary" onClick={() => onToggleTask(task.id)}>{task.completed ? "Pendiente" : "Completada"}</button>
+                <button className="secondary" onClick={() => setIsEditing(true)}>Editar</button>
+            </div>
         </li>
     )
 }

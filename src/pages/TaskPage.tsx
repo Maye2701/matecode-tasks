@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Task } from '../types/task'
 import TaskForm from '../components/tasks/TaskForm'
 import TaskList from '../components/tasks/TaskList'
+import '../styles/tasks.css'
 
 function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([])
@@ -42,15 +43,23 @@ function TasksPage() {
 
     return (
         <main className="tasks-page">
-            <h1>Mis tareas</h1>
-            <TaskForm onCreateTask={handleCreateTask} />
-            <p> Total de tareas: {tasks.length} </p>
-            <TaskList
-                tasks={tasks}
-                onToggleTask={handleToggleTask}
-                onDeleteTask={handleDeleteTask}
-                onUpdateTask={handleUpdateTask}
-            />
+            <div className="tasks-container">
+                <header className="tasks-header">
+                    <h1>Mis tareas</h1>
+                    <p>Organiza y completa tus actividades diarias.</p>
+                    <p> Total de tareas: {tasks.length} </p>
+                </header>
+                <TaskForm onCreateTask={handleCreateTask} />
+                <section className='tasks-section'>
+                    <h2>Lista de tareas</h2>
+                    <TaskList
+                        tasks={tasks}
+                        onToggleTask={handleToggleTask}
+                        onDeleteTask={handleDeleteTask}
+                        onUpdateTask={handleUpdateTask}
+                    />
+                </section>
+            </div>
         </main>
     )
 }
