@@ -1,20 +1,41 @@
 import { useState, type FormEvent } from "react"
+import { registerUser } from "../../services/authService"
+import { useNavigate } from "react-router"
 
 
 function RegisterForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
-    const [message, setMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const navigate = useNavigate();
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
+        setErrorMessage("");
         if (password !== confirmPassword) {
-            setMessage("Las contraseñas no coinciden")
+            setErrorMessage("Las contraseñas no coinciden")
             return
         }
-        setMessage("Formulario preparado para crear la cuenta.")
+
+        setIsSubmitting(true)
+
+        try {
+            await registerUser(email, password)
+            //Navega a la ruta /tasks
+            navigate("/tareas")
+
+        } catch {
+            //Muestra el error en un estado
+            setErrorMessage("Error al crear la cuenta")
+        }
+        finally {
+            setIsSubmitting(false)
+        }
     }
+
+
 
     return (
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -59,8 +80,8 @@ function RegisterForm() {
                     onChange={(event) => setConfirmPassword(event.target.value)}
                 />
             </div>
-            <button type="submit" className="primary">Registrarse</button>
-            {message && <p role="status" className="status-message">{message}</p>}
+            <button type="submit" className="primary" disabled={isSubmitting}>{isSubmitting ? "Creando cuenta..." : "Crear cuenta"}</button>
+            {errorMessage && <p role="alert" className="error-message">{errorMessage}</p>}
         </form>
     )
 }

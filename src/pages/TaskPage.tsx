@@ -3,6 +3,7 @@ import type { Task } from '../types/task'
 import TaskForm from '../components/tasks/TaskForm'
 import TaskList from '../components/tasks/TaskList'
 import '../styles/tasks.css'
+import LogoutButton from '../components/auth/LogoutButton'
 
 function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([])
@@ -48,6 +49,7 @@ function TasksPage() {
                     <h1>Mis tareas</h1>
                     <p>Organiza y completa tus actividades diarias.</p>
                     <p> Total de tareas: {tasks.length} </p>
+                    <LogoutButton />
                 </header>
                 <TaskForm onCreateTask={handleCreateTask} />
                 <section className='tasks-section'>

@@ -1,15 +1,33 @@
 import { useState, type FormEvent } from 'react'
+import { loginUser } from '../../services/authService'
+import { useNavigate } from "react-router"
 
 
 
 function LoginForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [message, setMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const navigate = useNavigate()
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
-        setMessage("Enviando formulario...")
+        setErrorMessage("")
+        setIsSubmitting(true)
+
+
+        try {
+            await loginUser(email, password)
+            //Navega a la ruta /tasks
+            navigate("/tareas")
+
+        } catch {
+            //Muestra el error en un estado
+            setErrorMessage("No fue posible iniciar sesión. Revisa tus credenciales.")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
 
@@ -41,8 +59,8 @@ function LoginForm() {
                     onChange={(event) => setPassword(event.target.value)}
                 />
             </div>
-            <button type="submit" className="primary">Iniciar sesión</button>
-            {message && <p role="status" className="status-message">{message}</p>}
+            <button type="submit" className="primary" disabled={isSubmitting}>{isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}</button>
+            {errorMessage && <p role="alert" className="error-message">{errorMessage}</p>}
         </form>
     )
 }
