@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { buildTaskSummary } from '../../utils/taskSummary'
 import type { Task } from '../../types/task'
 
 interface EmailSummaryButtonProps {
@@ -6,26 +7,7 @@ interface EmailSummaryButtonProps {
     userEmail: string
 }
 
-function buildTaskSummary(tasks: Task[]) {
-    const pendingTasks = tasks.filter((task) => !task.completed)
-    const completedTasks = tasks.filter((task) => task.completed)
 
-    const pendingList =
-        pendingTasks.map((task) => `- ${task.title}`).join('\n') || '- Ninguna'
-
-    const completedList =
-        completedTasks.map((task) => `- ${task.title}`).join('\n') || '- Ninguna'
-
-    return `Resumen de tareas
-
-Total: ${tasks.length}
-
-Pendientes (${pendingTasks.length}):
-${pendingList}
-
-Completadas (${completedTasks.length}):
-${completedList}`
-}
 
 function EmailSummaryButton({ tasks, userEmail }: EmailSummaryButtonProps) {
     const [isSending, setIsSending] = useState(false)
