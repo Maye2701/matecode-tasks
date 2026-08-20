@@ -1,45 +1,88 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Task } from '../types/task'
 import TaskForm from '../components/tasks/TaskForm'
 import TaskList from '../components/tasks/TaskList'
 import '../styles/tasks.css'
 import LogoutButton from '../components/auth/LogoutButton'
+import { useAuth } from '../hooks/userAuth'
+import { subscribeToTasks, createTask, updateTask, toggleTaskCompletion, deleteTask } from '../services/taskService'
 
 function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([])
+    const [loadingTasks, setLoadingTasks] = useState(true)
+    const [taskError, setTaskError] = useState('')
 
-    function handleUpdateTask(id: string, newTitle: string, newDescription: string) {
-        setTasks(currentTasks => currentTasks.map(task =>
-            task.id === id
-                ? { ...task, title: newTitle, description: newDescription, updatedAt: new Date() }
-                : task
-        ))
-    }
+    const { user } = useAuth()
 
-    function handleCreateTask(title: string, description: string) {
-        const fechaCreacion = new Date()
-        const newTask: Task = {
-            id: crypto.randomUUID(),
-            userId: "local-user",
-            title: title,
-            description: description,
-            completed: false,
-            createdAt: fechaCreacion,
-            updatedAt: fechaCreacion,
+    useEffect(() => {
+        if (!user) {
+            setLoadingTasks(false)
+            setTasks([])
+            return
         }
+        setLoadingTasks(true)
+        setTaskError('')
 
-        setTasks(currentTasks => [newTask, ...currentTasks])
+        const unsubscribe = subscribeToTasks(
+            user.uid,
+            (tasks) => {
+                setTasks(tasks)
+                setLoadingTasks(false)
+                setTaskError('')
+            },
+            (error) => {
+                setTaskError('No fue posible cargar las tareas.')
+                console.error(error)
+                setLoadingTasks(false)
+            }
+        )
+        return unsubscribe
+
+    }, [user])
+
+
+
+
+    async function handleUpdateTask(id: string, newTitle: string, newDescription: string) {
+        setTaskError('')
+        try {
+            await updateTask(id, newTitle, newDescription)
+        } catch {
+            setTaskError('No fue posible actualizar la tarea.')
+        }
     }
 
-    function handleToggleTask(id: string) {
-        setTasks(currentTasks => currentTasks.map(task =>
-            task.id === id ? { ...task, completed: !task.completed, updatedAt: new Date() } : task
-        ))
+    async function handleCreateTask(title: string, description: string) {
+        if (!user) return
+        setTaskError('')
+        try {
+            await createTask(user.uid, title, description)
+        } catch {
+            setTaskError('No fue posible crear la tarea.')
+        }
+    }
+
+    async function handleToggleTask(id: string) {
+
+        const task = tasks.find(t => t.id === id)
+        if (!task) return
+
+        setTaskError('')
+        try {
+            await toggleTaskCompletion(id, !task.completed)
+        } catch {
+            setTaskError('No fue posible cambiar el estado de la tarea.')
+        }
     }
 
 
-    function handleDeleteTask(id: string) {
-        setTasks(currentTasks => currentTasks.filter(task => task.id !== id))
+    async function handleDeleteTask(id: string) {
+        setTaskError('')
+        try {
+            await deleteTask(id)
+        } catch {
+            setTaskError('No fue posible eliminar la tarea.')
+        }
     }
 
     return (
@@ -48,18 +91,22 @@ function TasksPage() {
                 <header className="tasks-header">
                     <h1>Mis tareas</h1>
                     <p>Organiza y completa tus actividades diarias.</p>
-                    <p> Total de tareas: {tasks.length} </p>
+                    <p className='task-counter'> Total de tareas: {tasks.length} </p>
                     <LogoutButton />
                 </header>
                 <TaskForm onCreateTask={handleCreateTask} />
                 <section className='tasks-section'>
                     <h2>Lista de tareas</h2>
-                    <TaskList
-                        tasks={tasks}
-                        onToggleTask={handleToggleTask}
-                        onDeleteTask={handleDeleteTask}
-                        onUpdateTask={handleUpdateTask}
-                    />
+                    {loadingTasks && <p>Cargando tareas...</p>}
+                    {taskError && <p role="alert">{taskError}</p>}
+                    {!loadingTasks && (
+                        <TaskList
+                            tasks={tasks}
+                            onToggleTask={handleToggleTask}
+                            onDeleteTask={handleDeleteTask}
+                            onUpdateTask={handleUpdateTask}
+                        />
+                    )}
                 </section>
             </div>
         </main>

@@ -8,7 +8,7 @@ function LogoutButton() {
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     async function handleLogout() {
         setIsLoggingOut(true)
