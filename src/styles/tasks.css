@@ -94,6 +94,11 @@
     content: '✨';
 }
 
+.task-form {
+    display: grid;
+    gap: 1.5rem; /* Separación entre el textarea y el botón de agregar */
+}
+
 .task-list {
     list-style: none;
     display: grid;
@@ -180,7 +185,7 @@
 
 .task-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 1.25rem; /* Mayor separación entre los botones de editar/guardar/cancelar */
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--glass-border);
