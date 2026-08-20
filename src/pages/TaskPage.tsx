@@ -6,6 +6,7 @@ import '../styles/tasks.css'
 import LogoutButton from '../components/auth/LogoutButton'
 import { useAuth } from '../hooks/userAuth'
 import { subscribeToTasks, createTask, updateTask, toggleTaskCompletion, deleteTask } from '../services/taskService'
+import EmailSummaryButton from '../components/tasks/EmailSummaryButton'
 
 function TasksPage() {
     const [tasks, setTasks] = useState<Task[]>([])
@@ -93,6 +94,12 @@ function TasksPage() {
                     <p>Organiza y completa tus actividades diarias.</p>
                     <p className='task-counter'> Total de tareas: {tasks.length} </p>
                     <LogoutButton />
+                    {user?.email && (
+                        <EmailSummaryButton
+                            tasks={tasks}
+                            userEmail={user.email}
+                        />
+                    )}
                 </header>
                 <TaskForm onCreateTask={handleCreateTask} />
                 <section className='tasks-section'>
